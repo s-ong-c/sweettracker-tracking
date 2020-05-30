@@ -1,9 +1,29 @@
-import { combineReducers } from "@reduxjs/toolkit";
-import { configureStore } from "@reduxjs/toolkit";
+import {
+  combineReducers,
+  configureStore,
+  Dispatch,
+  getDefaultMiddleware,
+  Middleware,
+  MiddlewareAPI,
+  ReducersMapObject,
+} from '@reduxjs/toolkit';
 
-const rootReducer = combineReducers({});
+import { DELIVERY, deliveryReducer } from './delivery';
 
-const store = configureStore({ reducer: rootReducer });
+const rootReducer = combineReducers({
+  [DELIVERY]: deliveryReducer,
+} as ReducersMapObject);
 
-export type RootState = ReturnType<typeof rootReducer>;
-export default store;
+const persistMiddleware: Middleware = ({ getState }: MiddlewareAPI) => (
+  next: Dispatch,
+) => action => {
+  const returnValue = next(action);
+
+  return returnValue;
+};
+
+export type IRootState = ReturnType<typeof rootReducer>;
+export default configureStore({
+  reducer: rootReducer,
+  middleware: [...getDefaultMiddleware(), persistMiddleware],
+});
